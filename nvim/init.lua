@@ -60,7 +60,11 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
     },
     config = function()
-      require("neo-tree").setup({})
+      require("neo-tree").setup({
+	visible = true,
+        hide_dotfiles = false,
+        hide_gitignored = false,
+      })
     end,
     keys = {
       { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle file tree" },
