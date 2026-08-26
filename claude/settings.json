@@ -1,0 +1,43 @@
+{
+  "model": "opus[1m]",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json; print(json.dumps({'terminalSequence': chr(7)}))\""
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json; print(json.dumps({'terminalSequence': chr(7)}))\""
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.pl"
+  },
+  "enabledPlugins": {
+    "claude-mem@thedotmack": false
+  },
+  "extraKnownMarketplaces": {
+    "thedotmack": {
+      "source": {
+        "source": "github",
+        "repo": "thedotmack/claude-mem"
+      }
+    }
+  },
+  "effortLevel": "xhigh",
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true
+}

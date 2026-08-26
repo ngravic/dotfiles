@@ -3,6 +3,12 @@
 Configuraciones personales versionadas. Cada una vive en su propia carpeta y se
 symlinkea a su ubicación real.
 
+| Carpeta | Se symlinkea a |
+| --- | --- |
+| [`nvim/`](nvim) | `~/.config/nvim` |
+| [`tmux/`](tmux) | `~/.tmux.conf` |
+| [`claude/`](claude) | archivos sueltos dentro de `~/.claude` |
+
 ## nvim
 
 Config real en `~/.config/nvim`, symlinkeada a `nvim/` de este repo.
@@ -36,3 +42,26 @@ el repo original queda intacto en GitHub como archivo).
 ```bash
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
 ```
+
+## claude
+
+Configuración de Claude Code: instrucciones globales, settings, statusline,
+slash commands y skills. Detalles en [claude/README.md](claude/README.md).
+
+`~/.claude` mezcla configuración con estado en tiempo de ejecución, así que se
+symlinkea archivo por archivo, no la carpeta entera.
+
+### Instalar en una máquina nueva
+
+```bash
+cd ~/.claude
+for f in CLAUDE.md settings.json statusline.pl commands skills; do
+  if [ -e "$f" ] && [ ! -L "$f" ]; then mv "$f" "$f.pre-dotfiles"; fi
+  ln -sfn ~/.dotfiles/claude/"$f" "$f"
+done
+```
+
+### Notas
+
+- `.credentials.json` nunca se versiona. Es el token OAuth.
+- `settings.local.json` tampoco: son overrides por máquina.
