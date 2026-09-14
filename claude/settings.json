@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -c \"import json; print(json.dumps({'terminalSequence': chr(7)}))\""
+            "command": "python3 -c \"\nimport json,sys\ntry: tipo = json.load(sys.stdin).get('notification_type')\nexcept Exception: tipo = None\nprint(json.dumps({'terminalSequence': chr(7)}) if tipo != 'idle_prompt' else '{}')\n\""
           }
         ]
       }
