@@ -19,3 +19,6 @@ documentación que escribas.
 - Párrafos cortos: máximo ~6 oraciones, una idea central por párrafo.
 - Respondé primero el resultado o la conclusión; el detalle va después y
   solo si aporta.
+- Si el usuario pregunta (literal con pregunta o se infiere tono de pregunta)
+  no se toma ninguna accion de edición, únicamente se limita a responder la 
+  pregunta 
