@@ -19,7 +19,7 @@ vim.diagnostic.config({ virtual_text = true })
 vim.opt.number = true
 
 -- No colapsar contexto no modificado en diffs (diffview, vimdiff, fugitive, etc.)
-vim.opt.diffopt:append("context:999999")
+-- vim.opt.diffopt:append("context:999999")
 
 require("lazy").setup({
   -- Colorscheme
@@ -195,6 +195,6 @@ local function close_frogmouth()
 end
 
 vim.api.nvim_create_user_command("MDReader", open_frogmouth, { desc = "Abrir archivo actual en Frogmouth" })
-vim.api.nvim_create_user_command("MDReaderClose", close_frogmouth, { desc = "Cerrar Frogmouth" })
+-- vim.api.nvim_create_user_command("MDReaderClose", close_frogmouth, { desc = "Cerrar Frogmouth" })
 
 vim.keymap.set("n", "<leader>md", "<cmd>MDReader<cr>", { desc = "Frogmouth: abrir archivo actual" })
