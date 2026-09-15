@@ -2,8 +2,63 @@
 
 Configuración personal de tmux: reloj en la barra de estado (UTC-3 fijo),
 medidor de consumo de Claude, alertas visuales de actividad/bell, ventanas y
-paneles numerados desde 1, y un layout custom para ventanas nuevas
+paneles numerados desde 1, y layouts custom para ventanas nuevas
 (`bind-key C`, ver `scripts/new-window-layout.sh`).
+
+## Layouts para ventanas nuevas
+
+`Ctrl+b` + `C` abre un popup con dos pasos: el layout y el directorio de
+trabajo. Todos los paneles de la ventana nueva comparten ese directorio y la
+ventana toma su nombre.
+
+`Ctrl+b` + `c` sigue siendo el `new-window` normal de tmux.
+
+### Paso 1: el layout
+
+Una lista de radio buttons (`whiptail --radiolist`). El default ya viene
+marcado, así que Enter alcanza.
+
+| Layout | Paneles |
+|--------|---------|
+| `nvim + claude + shell` (default) | `nvim` a la izquierda, `claude` arriba a la derecha, shell abajo a la derecha |
+| `3x claude + shell (2x2)` | grilla 2x2: `claude` en tres paneles, shell abajo a la derecha |
+
+En los dos casos el shell queda enfocado.
+
+Teclas:
+
+- Flechas mueven el cursor, pero **no** cambian la marca.
+- Espacio marca la opción donde está el cursor.
+- Enter confirma la opción marcada.
+- Esc, o Tab Tab Enter para llegar a `<Cancel>`, sale sin crear la ventana.
+
+Ojo con la primera: si bajás con la flecha y apretás Enter sin pasar por
+Espacio, arranca el layout que seguía marcado. Es cómo funciona un radiolist.
+Si preferís que el cursor sea la selección, cambiá `--radiolist` por `--menu`
+en el script y saltea el tercer campo (`on`/`off`) de cada fila.
+
+### Paso 2: el directorio
+
+Un prompt de readline con el directorio actual ya escrito. Completa con Tab,
+como un prompt de shell normal. Enter acepta el que viene.
+
+### Agregar un layout
+
+En `scripts/new-window-layout.sh`:
+
+1. Escribí una función que corra los `tmux split-window`. Usá `$wd` para el
+   directorio y `$name` para el nombre de la ventana.
+2. Agregá una línea al array `LAYOUTS` con el formato
+   `"<key>|<etiqueta>|<función>"`. La `key` es interna; en el popup se ve solo
+   la etiqueta.
+
+La lista se arma sola desde ese array. Cada layout nuevo agrega una fila al
+diálogo, así que si deja de entrar subí el `-h` del `display-popup` en
+`tmux.conf`.
+
+Para armar grillas, seleccioná los paneles por posición (`{top-left}`,
+`{bottom-right}`) y no por índice: los índices se corren a medida que agregás
+paneles.
 
 ## Medidor de consumo de Claude
 
