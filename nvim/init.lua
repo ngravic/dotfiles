@@ -144,8 +144,7 @@ vim.lsp.config("basedpyright", {
 vim.lsp.enable("basedpyright")
 
 -- Frogmouth (lector de Markdown) en una terminal flotante, sin salir de la
--- sesión de nvim. :MDReader abre (o refoca) el archivo actual; :MDReaderClose
--- lo cierra a la fuerza.
+-- sesión de nvim. :MDReader abre (o refoca) el archivo actual.
 local frogmouth = { buf = nil, win = nil }
 
 local function open_frogmouth()
@@ -183,18 +182,7 @@ local function open_frogmouth()
   })
 end
 
-local function close_frogmouth()
-  if frogmouth.win and vim.api.nvim_win_is_valid(frogmouth.win) then
-    vim.api.nvim_win_close(frogmouth.win, true)
-  end
-  if frogmouth.buf and vim.api.nvim_buf_is_valid(frogmouth.buf) then
-    vim.api.nvim_buf_delete(frogmouth.buf, { force = true })
-  end
-  frogmouth.buf = nil
-  frogmouth.win = nil
-end
 
 vim.api.nvim_create_user_command("MDReader", open_frogmouth, { desc = "Abrir archivo actual en Frogmouth" })
--- vim.api.nvim_create_user_command("MDReaderClose", close_frogmouth, { desc = "Cerrar Frogmouth" })
 
 vim.keymap.set("n", "<leader>md", "<cmd>MDReader<cr>", { desc = "Frogmouth: abrir archivo actual" })
