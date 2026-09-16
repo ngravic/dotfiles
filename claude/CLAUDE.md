@@ -31,3 +31,11 @@ documentación que escribas.
   `probe-x`). Nunca dentro del `.bare` ni en la ruta por defecto de
   `isolation: "worktree"` del tool Agent: creálo a mano con
   `git worktree add ../<nombre> -b <rama>` y pasale la ruta al agente.
+
+# Git: commit y push
+
+- No hagas `git commit` ni `git push` sin consentimiento expreso del usuario en
+  ese momento.
+- Cada consentimiento vale por una sola operación. Un permiso dado antes en la
+  conversación no habilita un commit ni un push posterior: pedí autorización de
+  nuevo cada vez.
