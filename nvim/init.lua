@@ -24,10 +24,11 @@ vim.opt.number = true
 require("lazy").setup({
   -- Colorscheme
   {
-    "folke/tokyonight.nvim",
+    "Mofiqul/vscode.nvim",
     priority = 1000, -- Load before other plugins so it's ready at startup
     config = function()
-      vim.cmd.colorscheme("tokyonight")
+      vim.o.background = "dark"
+      vim.cmd.colorscheme("vscode")
     end,
   },
   -- Package Manager for LSPs
