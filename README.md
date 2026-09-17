@@ -59,6 +59,8 @@ for f in CLAUDE.md settings.json statusline.pl commands skills; do
   if [ -e "$f" ] && [ ! -L "$f" ]; then mv "$f" "$f.pre-dotfiles"; fi
   ln -sfn ~/.dotfiles/claude/"$f" "$f"
 done
+mkdir -p hooks
+ln -sfn ~/.dotfiles/claude/hooks/tasks-brief.py hooks/tasks-brief.py
 ```
 
 ### Notas

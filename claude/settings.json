@@ -1,6 +1,25 @@
 {
   "model": "opus",
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/.claude/hooks/tasks-brief.py show",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "python3 $HOME/.claude/hooks/tasks-brief.py refresh",
+            "async": true,
+            "timeout": 240,
+            "statusMessage": "Actualizando brief de tareas"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
@@ -42,7 +61,7 @@
   "agentPushNotifEnabled": true,
   "modelSettings": {
     "claude-opus-5": {
-      "effortLevel": "high"
+      "effortLevel": "xhigh"
     }
   }
 }
