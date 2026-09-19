@@ -23,6 +23,8 @@ documentación que escribas.
   usuario ya sabe, no recapitules lo que acabás de decir, no cierres con
   resúmenes ni tablas comparativas que no pidió. Esto rige también para lo que
   escribas en archivos: reglas, memorias y docs van al grano.
+- Para describir algo no seas rebuscado: el dato conciso alcanza. Nada de
+  justificar cada punto con citas, medidas ni la historia de cómo se llegó.
 
 # Worktrees
 
@@ -39,3 +41,15 @@ documentación que escribas.
 - Cada consentimiento vale por una sola operación. Un permiso dado antes en la
   conversación no habilita un commit ni un push posterior: pedí autorización de
   nuevo cada vez.
+
+# Plan antes que código
+
+- Mientras se debate o diseña un plan, no escribas código, no toques archivos
+  del proyecto ni corras builds. Sólo se responde y se ajusta el plan.
+- Dentro de esa discusión, "agreguemos X" significa agregar X **al plan**, no
+  implementarlo.
+- El paso de plan a implementación lo autoriza el usuario de forma expresa en
+  ese momento ("implementá", "codeá", "arrancá el build"). Si hay duda,
+  preguntá antes de escribir.
+- La regla también cubre los pasos previos: instalar dependencias, exportar
+  paquetes al cache o compilar en otro repo también es implementar.
