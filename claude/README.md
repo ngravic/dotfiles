@@ -16,6 +16,7 @@ carpeta entera. Se symlinkea archivo por archivo.
 | `statusline.pl` | `~/.claude/statusline.pl` | Statusline: carpeta base y contexto usado |
 | `commands/` | `~/.claude/commands` | Slash commands propios |
 | `skills/` | `~/.claude/skills` | Skills propias |
+| `memory/` | `~/.claude/memory` | Memorias globales que escribe Claude |
 | `hooks/tasks-brief.py` | `~/.claude/hooks/tasks-brief.py` | Brief de tareas pendientes al arrancar una ventana |
 
 ## Qué NO se versiona
@@ -24,6 +25,8 @@ carpeta entera. Se symlinkea archivo por archivo.
 - `settings.local.json` — overrides por máquina. Ese es su propósito.
 - `skills/synced/` — skills que Claude Code baja de claude.ai. Se regeneran
   solas. Están en `.gitignore`.
+- `projects/*/memory/` — memorias por proyecto. Viven con el estado de cada
+  proyecto, no son configuración.
 - `plugins/` — plugins instalados. `settings.json` ya guarda cuáles van, y
   Claude Code los reinstala solo.
 - Estado en tiempo de ejecución: `projects/`, `sessions/`, `history.jsonl`,
@@ -35,7 +38,7 @@ carpeta entera. Se symlinkea archivo por archivo.
 
 ```bash
 cd ~/.claude
-for f in CLAUDE.md settings.json statusline.pl commands skills; do
+for f in CLAUDE.md settings.json statusline.pl commands skills memory; do
   if [ -e "$f" ] && [ ! -L "$f" ]; then mv "$f" "$f.pre-dotfiles"; fi
   ln -sfn ~/.dotfiles/claude/"$f" "$f"
 done
@@ -84,7 +87,8 @@ tareas del working dir y globales. El resumen lo escribe un haiku.
 
 Cómo funciona:
 
-- `settings.json` registra dos hooks `SessionStart` con matcher `startup`.
+- `settings.json` registra dos hooks `SessionStart` con matcher
+  `startup|resume|clear`.
 - El hook `show` imprime el brief cacheado. Tarda milisegundos.
 - El hook `refresh` corre en background (`async`). Habla con el server MCP
   `global-tasks` por stdio, le pasa las tareas a `claude -p --model haiku` sin
@@ -120,6 +124,19 @@ Variables de entorno:
 - `CLAUDE_TASKS_BRIEF_CACHE` — usa otro directorio de cache. Sirve para probar.
 
 Para apagarlo, saca el bloque `SessionStart` de `settings.json`.
+
+## Memoria global al arrancar
+
+Cada sesión nueva carga `~/.claude/memory/MEMORY.md` como contexto. Es el índice
+de las memorias globales: una línea por memoria, con el link al archivo.
+
+- Lo carga un tercer hook `SessionStart` de `settings.json`, con el mismo
+  matcher `startup|resume|clear`.
+- El hook sólo lee el índice. Claude abre los archivos que necesita.
+- Si el archivo no existe o falla la lectura, el hook imprime `{}`. El arranque
+  nunca se rompe.
+- Las memorias por proyecto viven en `~/.claude/projects/<dir>/memory/` y no se
+  versionan.
 
 ## Notas
 

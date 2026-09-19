@@ -3,8 +3,13 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup",
+        "matcher": "startup|resume|clear",
         "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"\nimport json,os\np=os.path.expanduser('~/.claude/memory/MEMORY.md')\ntry: t=open(p,encoding='utf-8').read().strip()\nexcept Exception: t=''\nprint(json.dumps({'suppressOutput':True,'hookSpecificOutput':{'hookEventName':'SessionStart','additionalContext':'Memoria global ('+p+'):\\n'+t}}) if t else '{}')\n\"",
+            "timeout": 10
+          },
           {
             "type": "command",
             "command": "python3 $HOME/.claude/hooks/tasks-brief.py show",

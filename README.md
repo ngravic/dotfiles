@@ -55,7 +55,7 @@ symlinkea archivo por archivo, no la carpeta entera.
 
 ```bash
 cd ~/.claude
-for f in CLAUDE.md settings.json statusline.pl commands skills; do
+for f in CLAUDE.md settings.json statusline.pl commands skills memory; do
   if [ -e "$f" ] && [ ! -L "$f" ]; then mv "$f" "$f.pre-dotfiles"; fi
   ln -sfn ~/.dotfiles/claude/"$f" "$f"
 done
