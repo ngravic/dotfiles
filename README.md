@@ -9,17 +9,46 @@ symlinkea a su ubicación real.
 | [`tmux/`](tmux) | `~/.tmux.conf` |
 | [`claude/`](claude) | archivos sueltos dentro de `~/.claude` |
 
-## nvim
-
-Config real en `~/.config/nvim`, symlinkeada a `nvim/` de este repo.
-
-### Instalar en una máquina nueva
+## Instalar
 
 ```bash
 git clone <url-del-repo> ~/.dotfiles
-ln -s ~/.dotfiles/nvim ~/.config/nvim
-nvim   # lazy.nvim instala los plugins automáticamente
+~/.dotfiles/install.sh
 ```
+
+`install.sh` crea las carpetas y los symlinks que faltan. Es idempotente: lo que
+ya apunta al repo lo deja como está. Corrélo cada vez que pulleás cambios. Esa
+es la forma de sincronizar máquinas: pulleás y corrés el script.
+
+Flags:
+
+- `-n`, `--dry-run` — muestra qué haría, no toca nada.
+- `--adopt` — si el destino ya existe y no apunta al repo, lo mueve a
+  `<destino>.pre-dotfiles` y hace el symlink.
+
+Sin `--adopt`, un destino ocupado se reporta como conflicto y no se toca. El
+script termina con código 1 si hubo alguno.
+
+### Cómo está armado
+
+- `install.sh` en la raíz: corre un `install.sh` por carpeta, en orden
+  alfabético, e imprime el total.
+- `lib.sh`: helpers `link`, `ensure_dir` y `summary`.
+- `nvim/install.sh`, `tmux/install.sh`, `claude/install.sh`: cada carpeta
+  declara sus propios symlinks. También corren sueltos, para instalar una sola
+  config.
+- Para sumar una config nueva: carpeta nueva con su `install.sh` adentro. La
+  raíz no se toca.
+
+Lo que ya es symlink de carpeta no necesita nada más. Una memoria nueva en
+`claude/memory/` aparece con el `git pull`, sin correr el script.
+
+## nvim
+
+Config real en `~/.config/nvim`, symlinkeada archivo por archivo a `nvim/` de
+este repo.
+
+La primera vez que abrís `nvim`, lazy.nvim instala los plugins solo.
 
 ### Notas
 
@@ -37,31 +66,14 @@ Detalles en [tmux/README.md](tmux/README.md).
 Migrado desde el repo standalone `ngravic/tmux` (historia git no preservada;
 el repo original queda intacto en GitHub como archivo).
 
-### Instalar en una máquina nueva
-
-```bash
-ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
-```
-
 ## claude
 
 Configuración de Claude Code: instrucciones globales, settings, statusline,
-slash commands y skills. Detalles en [claude/README.md](claude/README.md).
+slash commands, skills y memorias globales. Detalles en
+[claude/README.md](claude/README.md).
 
 `~/.claude` mezcla configuración con estado en tiempo de ejecución, así que se
 symlinkea archivo por archivo, no la carpeta entera.
-
-### Instalar en una máquina nueva
-
-```bash
-cd ~/.claude
-for f in CLAUDE.md settings.json statusline.pl commands skills memory; do
-  if [ -e "$f" ] && [ ! -L "$f" ]; then mv "$f" "$f.pre-dotfiles"; fi
-  ln -sfn ~/.dotfiles/claude/"$f" "$f"
-done
-mkdir -p hooks
-ln -sfn ~/.dotfiles/claude/hooks/tasks-brief.py hooks/tasks-brief.py
-```
 
 ### Notas
 

@@ -34,17 +34,18 @@ carpeta entera. Se symlinkea archivo por archivo.
   `cache/`, `debug/`, `daemon/`, `ide/`, `remote/`, `stats-cache.json`,
   `policy-limits.json`.
 
-## Instalar en una máquina nueva
+## Instalar
+
+Lo hace `install.sh` de esta carpeta. Corre solo o desde el de la raíz:
 
 ```bash
-cd ~/.claude
-for f in CLAUDE.md settings.json statusline.pl commands skills memory; do
-  if [ -e "$f" ] && [ ! -L "$f" ]; then mv "$f" "$f.pre-dotfiles"; fi
-  ln -sfn ~/.dotfiles/claude/"$f" "$f"
-done
-mkdir -p hooks
-ln -sfn ~/.dotfiles/claude/hooks/tasks-brief.py hooks/tasks-brief.py
+~/.dotfiles/install.sh          # todas las configs
+~/.dotfiles/claude/install.sh   # sólo esta
 ```
+
+Es idempotente. Si un destino ya existe y no apunta al repo, lo reporta como
+conflicto y no lo toca; con `--adopt` lo mueve a `<destino>.pre-dotfiles` y hace
+el symlink.
 
 `hooks/` no se symlinkea entera: Claude Code guarda ahí sus propios
 `README.md` y `hooks.json`. Se symlinkea archivo por archivo.

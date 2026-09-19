@@ -135,11 +135,15 @@ abajo la statusline.
 
 ## Instalación
 
-Con el repo ~/.dotfiles ya clonado, symlinkear `tmux.conf`:
+Con el repo ~/.dotfiles ya clonado:
 
 ```sh
-ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
+~/.dotfiles/install.sh        # todas las configs
+~/.dotfiles/tmux/install.sh   # sólo tmux
 ```
+
+Symlinkea `tmux.conf` a `~/.tmux.conf`. Los scripts de `scripts/` los llama
+`tmux.conf` por ruta absoluta al repo, así que no se symlinkean.
 
 ## Autostartup
 
