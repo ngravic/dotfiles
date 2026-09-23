@@ -4,6 +4,8 @@
 Modos:
   show     imprime el brief cacheado del working dir (instantaneo, hook sincronico)
   refresh  consulta el MCP global-tasks, resume con haiku y reescribe el cache (hook async)
+  now      como refresh pero sincronico, sin mirar la edad del cache, e imprime el brief
+           en texto plano (comando /pending-tasks)
 
 El cache es por working dir, porque la separacion proyecto/globales depende del cwd.
 """
@@ -28,6 +30,10 @@ MCP_TIMEOUT = 45
 HAIKU_TIMEOUT = 180
 MIN_REFRESH_SECONDS = 1800  # no rehace el brief si el cache es mas nuevo que esto
 EMPTY_BRIEF = "Sin tareas pendientes en Google Tasks."
+UNDERLINE_CYAN = "\033[4;36m"
+BOLD_RED = "\033[1;31m"
+WHITE = "\033[97m"
+RESET = "\033[0m"
 
 
 def read_cwd():
@@ -44,14 +50,15 @@ def cache_path(cwd):
     return CACHE_DIR / f"{name}-{key}.txt"
 
 
-def emit(message=None):
+def emit(message=None, display=None):
+    """display es la version con color para la terminal; a Claude le llega message."""
     if not message:
         print("{}")
         return
     print(
         json.dumps(
             {
-                "systemMessage": message,
+                "systemMessage": display or message,
                 "suppressOutput": True,
                 "hookSpecificOutput": {
                     "hookEventName": "SessionStart",
@@ -60,6 +67,23 @@ def emit(message=None):
             }
         )
     )
+
+
+def paint(color, text):
+    return f"{color}{text}{RESET}"
+
+
+def line_color(line):
+    if not line.startswith("- "):
+        return UNDERLINE_CYAN
+    if "Vencid" in line:
+        return BOLD_RED
+    return WHITE
+
+
+def colorize(body):
+    """Titulos de seccion en cian subrayado, tareas vencidas en rojo y el resto en blanco."""
+    return "\n".join(paint(line_color(line), line) for line in body.splitlines())
 
 
 def age_label(seconds):
@@ -78,8 +102,8 @@ def show(cwd):
         emit("Tareas: primer brief en preparacion. Aparece en la proxima ventana.")
         return
     body = path.read_text(encoding="utf-8").strip()
-    age = age_label(time.time() - path.stat().st_mtime)
-    emit(f"{body}\n(cache {age})")
+    footer = f"(cache {age_label(time.time() - path.stat().st_mtime)})"
+    emit(f"{body}\n{footer}", display=f"\n{colorize(body)}\n{paint(WHITE, footer)}")
 
 
 def mcp_pending_tasks():
@@ -190,6 +214,20 @@ def summarize(prompt):
     return res.stdout.strip()
 
 
+def build_brief(cwd):
+    tasks_text = mcp_pending_tasks()
+    if not tasks_text or "Found 0 tasks" in tasks_text:
+        return EMPTY_BRIEF
+    return summarize(build_prompt(cwd, tasks_text)) or EMPTY_BRIEF
+
+
+def write_cache(path, brief):
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(brief + "\n", encoding="utf-8")
+    tmp.replace(path)
+
+
 def refresh(cwd):
     if os.environ.get(GUARD_ENV) == "1":
         return
@@ -197,19 +235,24 @@ def refresh(cwd):
     fresh = path.exists() and time.time() - path.stat().st_mtime < MIN_REFRESH_SECONDS
     if fresh and os.environ.get("CLAUDE_TASKS_BRIEF_FORCE") != "1":
         return
-    tasks_text = mcp_pending_tasks()
-    if not tasks_text or "Found 0 tasks" in tasks_text:
-        brief = EMPTY_BRIEF
-    else:
-        brief = summarize(build_prompt(cwd, tasks_text)) or EMPTY_BRIEF
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(brief + "\n", encoding="utf-8")
-    tmp.replace(path)
+    write_cache(path, build_brief(cwd))
+
+
+def now(cwd):
+    brief = build_brief(cwd)
+    write_cache(cache_path(cwd), brief)
+    print(brief)
 
 
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else "show"
+    if mode == "now":
+        # lo corre /pending-tasks: no hay JSON en stdin y el error tiene que verse
+        try:
+            now(os.getcwd())
+        except Exception as exc:
+            print(f"No pude armar el brief de tareas: {exc}")
+        return
     cwd = read_cwd()
     try:
         if mode == "refresh":

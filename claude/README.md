@@ -101,6 +101,9 @@ Cómo funciona:
 - Una tarea es del working dir si su título o sus notas mencionan el nombre del
   directorio actual. El resto van a Globales.
 - Cualquier error imprime `{}`. El arranque nunca se rompe.
+- `/pending-tasks` trae el brief al momento. Corre el modo `now`: MCP y haiku
+  sincrónicos (unos 15 s), reescribe el cache e imprime el brief para que
+  Claude lo muestre.
 
 Requisitos:
 
