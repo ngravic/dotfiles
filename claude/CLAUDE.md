@@ -53,3 +53,17 @@ documentación que escribas.
   preguntá antes de escribir.
 - La regla también cubre los pasos previos: instalar dependencias, exportar
   paquetes al cache o compilar en otro repo también es implementar.
+
+# Google Tasks
+
+- Cada proyecto tiene una lista con el nombre de la carpeta del repo. En un
+  worktree, la carpeta del repo es la que contiene `.bare`.
+- Una tarea nueva va a la lista del proyecto actual, sin marca. El id de la
+  lista sale de `python3 ~/.claude/hooks/tasks-brief.py ensure-list`, que
+  crea la lista si no existe. El MCP `global-tasks` no crea listas.
+- Una tarea sin proyecto va a `Mis tareas`.
+- El título no lleva prefijo de proyecto: la lista ya dice el proyecto.
+- Estados:
+  - Por hacer: pendiente, sin marca.
+  - En curso: pendiente, con `▶ ` al principio del título.
+  - Hecha: completada.

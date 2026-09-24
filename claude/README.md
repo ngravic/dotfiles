@@ -83,8 +83,24 @@ printf '{"workspace":{"current_dir":"/tmp"},"context_window":{"used_percentage":
 
 ## Brief de tareas al arrancar
 
-Cada ventana nueva muestra las tareas pendientes de Google Tasks, separadas en
-tareas del working dir y globales. El resumen lo escribe un haiku.
+Cada ventana nueva muestra las tareas pendientes de Google Tasks del proyecto
+del working dir y las globales. El resumen lo escribe un haiku.
+
+Listas y estados en Google Tasks:
+
+- Cada proyecto tiene una lista con el nombre de la carpeta del repo. En un
+  worktree, el proyecto es la carpeta que contiene `.bare`.
+- `Mis tareas` es la lista general. Tiene las tareas sin proyecto y el brief
+  la muestra como Globales.
+- Las otras listas no aparecen en el brief. Aparecen con `/pending-tasks <pedido>`.
+- Estados de una tarea:
+  - Por hacer: pendiente, sin marca.
+  - En curso: pendiente, con `▶ ` al principio del título.
+  - Hecha: completada.
+- El MCP `global-tasks` no crea listas. `tasks-brief.py ensure-list [proyecto]`
+  imprime el id de la lista del proyecto y la crea si no existe. Llama directo
+  a la API de Google Tasks con las credenciales del MCP. Sin argumento usa el
+  proyecto del working dir.
 
 Cómo funciona:
 
@@ -98,12 +114,15 @@ Cómo funciona:
   anterior. La ventana siguiente ve lo que deja este refresh.
 - El cache es por working dir: `~/.claude/cache/tasks-brief/<dir>-<hash>.txt`.
 - `refresh` no hace nada si el cache tiene menos de 30 minutos.
-- Una tarea es del working dir si su título o sus notas mencionan el nombre del
-  directorio actual. El resto van a Globales.
+- El script clasifica por lista. Haiku solo escribe el dato clave de cada
+  tarea. Si haiku falla, el brief sale igual con título y vencimiento.
 - Cualquier error imprime `{}`. El arranque nunca se rompe.
 - `/pending-tasks` trae el brief al momento. Corre el modo `now`: MCP y haiku
   sincrónicos (unos 15 s), reescribe el cache e imprime el brief para que
   Claude lo muestre.
+- `/pending-tasks <pedido>` (por ejemplo `ordenar por producto` o `kanban`)
+  corre el modo `raw`: trae todas las listas con estado y notas, sin haiku ni
+  cache (unos 4 s). Claude arma la vista que dice el pedido.
 
 Requisitos:
 
@@ -117,6 +136,13 @@ Probarlo a mano:
 ```bash
 echo "{\"cwd\":\"$PWD\"}" | CLAUDE_TASKS_BRIEF_FORCE=1 python3 ~/.claude/hooks/tasks-brief.py refresh
 echo "{\"cwd\":\"$PWD\"}" | python3 ~/.claude/hooks/tasks-brief.py show
+python3 ~/.claude/hooks/tasks-brief.py raw
+```
+
+Pruebas unitarias:
+
+```bash
+python3 -m unittest discover -s claude/hooks -p 'test_*.py'
 ```
 
 Variables de entorno:

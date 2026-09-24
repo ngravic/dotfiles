@@ -20,4 +20,8 @@ igual porque no se revierte con git.
 Elegir el alcance con una pregunta no es autorización para ejecutarlo: la
 respuesta define qué se haría, no que se haga.
 
+"Vamos a crear X, veamos cuáles faltan" pide mostrar primero. Crear viene
+después de que el usuario elija. Pasó con las listas de Google Tasks: no
+quería todas.
+
 Se aplica junto con [[feedback-responder-lo-que-se-pregunta]].
