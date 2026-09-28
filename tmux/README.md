@@ -25,6 +25,10 @@ marcado, así que Enter alcanza.
 
 En los dos casos el shell queda enfocado.
 
+La base de cada panel es `bash`. El script abre el panel con el shell y le
+escribe el comando (`nvim` o `claude`). Al cerrar el programa volvés al prompt
+y el panel no se cierra. `Ctrl+Z` suspende el programa y `fg` lo retoma.
+
 Teclas:
 
 - Flechas mueven el cursor, pero **no** cambian la marca.
@@ -47,7 +51,9 @@ como un prompt de shell normal. Enter acepta el que viene.
 En `scripts/new-window-layout.sh`:
 
 1. Escribí una función que corra los `tmux split-window`. Usá `$wd` para el
-   directorio y `$name` para el nombre de la ventana.
+   directorio y `$name` para el nombre de la ventana. No le pases el programa
+   a `split-window`: guardá el id del panel con `-P -F '#{pane_id}'` y
+   corré `run_in <id> <comando>`, así la base del panel sigue siendo `bash`.
 2. Agregá una línea al array `LAYOUTS` con el formato
    `"<key>|<etiqueta>|<función>"`. La `key` es interna; en el popup se ve solo
    la etiqueta.

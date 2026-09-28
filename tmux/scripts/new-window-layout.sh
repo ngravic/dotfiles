@@ -7,6 +7,9 @@
 # Layouts:
 #   1  nvim left, claude top right, shell bottom right (shell focused)
 #   2  2x2 grid: claude in three panes, shell bottom right (shell focused)
+#
+# Every pane starts as a plain shell and the program is typed into it, so
+# quitting nvim or claude drops back to the shell instead of closing the pane.
 set -euo pipefail
 
 # One entry per layout: "<key>|<label>|<function>". Adding a layout means
@@ -18,22 +21,34 @@ LAYOUTS=(
 )
 DEFAULT_LAYOUT=1
 
+# Types a command into a pane's shell and runs it.
+run_in() {
+  tmux send-keys -t "$1" "$2" Enter
+}
+
 layout_nvim_claude_shell() {
-  tmux new-window -n "$name" -c "$wd" "nvim"
-  tmux split-window -h -l 50% -c "$wd" "claude"
+  local nvim claude
+  nvim="$(tmux new-window -P -F '#{pane_id}' -n "$name" -c "$wd")"
+  claude="$(tmux split-window -P -F '#{pane_id}' -h -l 50% -c "$wd")"
   tmux split-window -v -l 50% -c "$wd"
+  run_in "$nvim" nvim
+  run_in "$claude" claude
 }
 
 layout_claude_grid() {
   # Build the grid by halves instead of by pane index: pane indices shift as
   # panes are added, but {top-left} and {bottom-right} always resolve by
   # position.
-  tmux new-window -n "$name" -c "$wd" "claude"
-  tmux split-window -v -l 50% -c "$wd" "claude"
+  local top_left bottom_left top_right
+  top_left="$(tmux new-window -P -F '#{pane_id}' -n "$name" -c "$wd")"
+  bottom_left="$(tmux split-window -P -F '#{pane_id}' -v -l 50% -c "$wd")"
   tmux split-window -h -l 50% -c "$wd"
   tmux select-pane -t '{top-left}'
-  tmux split-window -h -l 50% -c "$wd" "claude"
+  top_right="$(tmux split-window -P -F '#{pane_id}' -h -l 50% -c "$wd")"
   tmux select-pane -t '{bottom-right}'
+  run_in "$top_left" claude
+  run_in "$bottom_left" claude
+  run_in "$top_right" claude
 }
 
 # radiolist takes a flat "<tag> <item> <on|off>" triplet per row. The tag is
