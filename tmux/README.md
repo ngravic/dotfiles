@@ -139,6 +139,26 @@ eval {
 Va dentro de un `eval` a propósito: un problema con el cache nunca debe tirar
 abajo la statusline.
 
+## Sesiones persistentes
+
+`tmux-resurrect` y `tmux-continuum` mantienen las sesiones después de
+reiniciar la PC. Los maneja TPM.
+
+- Se restauran sesiones, ventanas, paneles, layouts, directorios y el texto de
+  cada panel.
+- Los programas abiertos no se restauran, salvo los de la lista de
+  `tmux-resurrect` (`vim`, `less`, `top` y otros). `claude` vuelve como shell.
+- `continuum` guarda cada 15 minutos. Restaura solo cuando arranca el server.
+- `prefix + Ctrl-s` guarda a mano. `prefix + Ctrl-r` restaura a mano.
+- Los guardados van en `~/.local/share/tmux/resurrect/`.
+
+En WSL, reiniciar la PC apaga la VM. Al abrir tmux de nuevo, `continuum`
+restaura el último guardado.
+
+TPM y los plugins viven en `~/.tmux/plugins`, fuera del repo. En una máquina
+nueva, `tmux.conf` clona TPM e instala los plugins la primera vez que carga.
+Para sumar un plugin: agregá su `set -g @plugin` y apretá `prefix + I`.
+
 ## Instalación
 
 Con el repo ~/.dotfiles ya clonado:
